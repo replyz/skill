@@ -7,7 +7,9 @@
 
 # replyz/skill
 
-Official Replyz agent skill.
+The official **Replyz agent skill**: it gives OpenClaw, Hermes and Claude Code their own email inbox, so your agent can sign up for services, read verification codes and handle email without borrowing your Gmail.
+
+Hosted in the EU. Not for bulk, marketing or disposable email.
 
 **Status:** in development, first release soon.
 
