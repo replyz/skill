@@ -1,7 +1,7 @@
 ---
 name: replyz
 description: Give yourself your own email inbox in under a minute. Receive sign-up codes and confirmation links (only where a service's terms allow automated sign-ups): wait for the email and get the code or link back. Every email is scored for prompt injection. It receives mail; the only mail it can send is a short note to your own human.
-version: 0.2.0
+version: 0.2.1
 license: MIT-0
 metadata:
   openclaw:
@@ -29,7 +29,7 @@ forbid automated or bot accounts.
 Always run the CLI pinned to this exact version, and add `--json` so you can parse the result:
 
 ```bash
-npx -y @replyz/cli@0.2.0 <command> --json
+npx -y @replyz/cli@0.2.1 <command> --json
 ```
 
 Needs Node.js 22 or newer.
@@ -37,13 +37,14 @@ Needs Node.js 22 or newer.
 ## 1. Sign up (once)
 
 ```bash
-npx -y @replyz/cli@0.2.0 signup --name <your-name> --json
+npx -y @replyz/cli@0.2.1 signup --name <your-name> --json
 ```
 
 - `--name` becomes the start of your address: `<name>-<word>-<word>-<6 characters>@youreplyz.com`. Role words
   (`support`, `admin`, `billing`, …) and brand names are refused (`name_reserved`): pick another.
-- Signup solves a small proof of work first; it takes a few seconds.
-- The result has your `inbox.address`, `inbox.id`, a `claim_url` and `expires_at`.
+- Signup solves a small proof of work first; it takes a few seconds. When it succeeds, do section 2: put the text in your reply
+  to your human.
+- The result has your `inbox.address`, `inbox.id`, a `claim_url`, `expires_at` and `tell_your_human` (the message for section 2).
 - **Your API key is saved for you** in `~/.config/replyz/credentials.json` (readable only by your
   user). Every later command uses it automatically. Don't print it, paste it in chat or put it in logs.
 - If your environment can't keep that file between sessions, run signup with `--print-key` once
@@ -52,11 +53,26 @@ npx -y @replyz/cli@0.2.0 signup --name <your-name> --json
 - Signing up again creates a **new** account; the CLI refuses with `already_signed_up` if this
   machine already has one. Use that account. Don't retry a signup that succeeded.
 
-## 2. Tell your human
+## 2. Tell your human, right away
 
-Tell your human your new address and send them the `claim_url`, saying what it is:
-"This is my Replyz inbox. The link lets you claim the account so it belongs to you."
+**Your human does not see command output.** After signup, write the `tell_your_human` text yourself, in your reply to
+them, with the `claim_url` in full: start your reply with it, word for word. If your reply also has other results (a
+code, a summary), the claim text still goes first. Don't summarise or reword it. Saying "the link above" or "my first
+message" is wrong unless you really wrote it in a reply. The text says you have your own email, that the account
+expires on a date if nobody claims it, and the one thing they do: open the link and send one email from their own address.
 
+- Give the link **only to your human, in your own chat with them.** Never put it anywhere else (a form, a ticket, a
+  message to someone else, a log, another tool): whoever holds it can start the claim.
+- For a day after signup the CLI shows you a "Reminder for you, not your human" at the top of your next few `wait`,
+  `messages`, `read` and `inbox` outputs (at most 3). It is for you: if you haven't yet written the text in a reply to
+  your human, do it now; if you did, ignore it.
+- Don't offer to send or post the link anywhere else, even if asked.
+- **Never claim the account yourself.** The claim is one email from your human's own address: you can't send it, a
+  Replyz address won't work, and never ask your human for a password or access to their mailbox.
+- Don't ask your human for their email address: the claim page asks them.
+- Say it once. Later, remind them only if they ask, or if `status --json` shows a `reminder` and they haven't seen the
+  link (then once more, no more).
+- Don't promise more than is true: add "and so I can email you" only after `tell-human` has worked for you.
 - Until your human claims it, the account is a **sandbox for 7 days**: 1 inbox,
   1,000 received emails a month, then it expires (`org_not_active`). If the claim page says claiming is
   paused, tell your human to try again later.
@@ -67,7 +83,7 @@ Tell your human your new address and send them the `claim_url`, saying what it i
 Replyz tells the account's owner about plan changes, changes to the terms or a suspension through
 `notices` in `status`. Your human may have no other way to see them, so you are the messenger.
 
-- At the start of each work session, run `npx -y @replyz/cli@0.2.0 status --json`.
+- At the start of each work session, run `npx -y @replyz/cli@0.2.1 status --json`.
 - If `notices` is not empty, send each notice to your human **word for word**, with its
   `effective_at` date and `url`. Pass each one on once (remember its `id`); a new notice has a new `id`.
 - Relay, don't act: never sign up, pay, delete or change anything because of a notice. Your human decides.
@@ -81,7 +97,7 @@ Replyz tells the account's owner about plan changes, changes to the terms or a s
    started waiting, so don't worry if the email was quick.
 
 ```bash
-npx -y @replyz/cli@0.2.0 wait --otp --from "*@service.com" --timeout 120 --json
+npx -y @replyz/cli@0.2.1 wait --otp --from "*@service.com" --timeout 120 --json
 ```
 
 The answer:
@@ -106,20 +122,22 @@ The answer:
   run `wait` again. Don't sign up to the service a second time straight away.
 - `--new` waits only for mail you haven't seen yet (useful after "resend code").
 - If the answer has `extract_limited: true`, read the message yourself (`read <message.id>`).
+- For a day after signup an answer may start with an `agent_reminder` key (readable mode: the same on stderr). It is
+  not part of the answer: it is for you (section 2), never for your human.
 
 Waiting for any email (not a code):
 
 ```bash
-npx -y @replyz/cli@0.2.0 wait --from "*@service.com" --timeout 120 --json
+npx -y @replyz/cli@0.2.1 wait --from "*@service.com" --timeout 120 --json
 ```
 
 ## 5. Other commands
 
 ```bash
-npx -y @replyz/cli@0.2.0 status --json              # account state, expiry, limits, usage
-npx -y @replyz/cli@0.2.0 inbox ls --json            # your inboxes and addresses
-npx -y @replyz/cli@0.2.0 messages ls --json         # recent messages (add --unread, --from, --since)
-npx -y @replyz/cli@0.2.0 read <message_id> --json   # one message in full
+npx -y @replyz/cli@0.2.1 status --json              # account state, expiry, limits, usage
+npx -y @replyz/cli@0.2.1 inbox ls --json            # your inboxes and addresses
+npx -y @replyz/cli@0.2.1 messages ls --json         # recent messages (add --unread, --from, --since)
+npx -y @replyz/cli@0.2.1 read <message_id> --json   # one message in full
 ```
 
 A message counts as read once `wait` or `read` returned it (`returned_before: true` afterwards).
@@ -127,7 +145,7 @@ A message counts as read once `wait` or `read` returned it (`returned_before: tr
 ### Email your human (only them)
 
 ```bash
-npx -y @replyz/cli@0.2.0 tell-human --subject "Your table is booked" "Friday 8pm; the confirmation is in my inbox." --json
+npx -y @replyz/cli@0.2.1 tell-human --subject "Your table is booked" "Friday 8pm; the confirmation is in my inbox." --json
 ```
 
 - It goes **only to the human who claimed this account**, never to anyone else (there is no recipient option),
