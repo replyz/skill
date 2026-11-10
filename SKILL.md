@@ -1,7 +1,7 @@
 ---
 name: replyz
 description: Give yourself your own email inbox in under a minute. Receive sign-up codes and confirmation links (only where a service's terms allow automated sign-ups): wait for the email and get the code or link back. Every email is scored for prompt injection. It receives mail; the only mail it can send is a short note to your own human.
-version: 0.2.1
+version: 0.2.2
 license: MIT-0
 metadata:
   openclaw:
@@ -29,7 +29,7 @@ forbid automated or bot accounts.
 Always run the CLI pinned to this exact version, and add `--json` so you can parse the result:
 
 ```bash
-npx -y @replyz/cli@0.2.1 <command> --json
+npx -y @replyz/cli@0.2.2 <command> --json
 ```
 
 Needs Node.js 22 or newer.
@@ -37,7 +37,7 @@ Needs Node.js 22 or newer.
 ## 1. Sign up (once)
 
 ```bash
-npx -y @replyz/cli@0.2.1 signup --name <your-name> --json
+npx -y @replyz/cli@0.2.2 signup --name <your-name> --json
 ```
 
 - `--name` becomes the start of your address: `<name>-<word>-<word>-<6 characters>@youreplyz.com`. Role words
@@ -73,7 +73,7 @@ expires on a date if nobody claims it, and the one thing they do: open the link 
 - Say it once. Later, remind them only if they ask, or if `status --json` shows a `reminder` and they haven't seen the
   link (then once more, no more).
 - Don't promise more than is true: add "and so I can email you" only after `tell-human` has worked for you.
-- Until your human claims it, the account is a **sandbox for 7 days**: 1 inbox,
+- Until your human claims it, the account is a **sandbox for 24 hours**: 1 inbox,
   1,000 received emails a month, then it expires (`org_not_active`). If the claim page says claiming is
   paused, tell your human to try again later.
 - Ask your human before signing up again after an expiry.
@@ -83,7 +83,7 @@ expires on a date if nobody claims it, and the one thing they do: open the link 
 Replyz tells the account's owner about plan changes, changes to the terms or a suspension through
 `notices` in `status`. Your human may have no other way to see them, so you are the messenger.
 
-- At the start of each work session, run `npx -y @replyz/cli@0.2.1 status --json`.
+- At the start of each work session, run `npx -y @replyz/cli@0.2.2 status --json`.
 - If `notices` is not empty, send each notice to your human **word for word**, with its
   `effective_at` date and `url`. Pass each one on once (remember its `id`); a new notice has a new `id`.
 - Relay, don't act: never sign up, pay, delete or change anything because of a notice. Your human decides.
@@ -97,7 +97,7 @@ Replyz tells the account's owner about plan changes, changes to the terms or a s
    started waiting, so don't worry if the email was quick.
 
 ```bash
-npx -y @replyz/cli@0.2.1 wait --otp --from "*@service.com" --timeout 120 --json
+npx -y @replyz/cli@0.2.2 wait --otp --from "*@service.com" --timeout 120 --json
 ```
 
 The answer:
@@ -128,16 +128,16 @@ The answer:
 Waiting for any email (not a code):
 
 ```bash
-npx -y @replyz/cli@0.2.1 wait --from "*@service.com" --timeout 120 --json
+npx -y @replyz/cli@0.2.2 wait --from "*@service.com" --timeout 120 --json
 ```
 
 ## 5. Other commands
 
 ```bash
-npx -y @replyz/cli@0.2.1 status --json              # account state, expiry, limits, usage
-npx -y @replyz/cli@0.2.1 inbox ls --json            # your inboxes and addresses
-npx -y @replyz/cli@0.2.1 messages ls --json         # recent messages (add --unread, --from, --since)
-npx -y @replyz/cli@0.2.1 read <message_id> --json   # one message in full
+npx -y @replyz/cli@0.2.2 status --json              # account state, expiry, limits, usage
+npx -y @replyz/cli@0.2.2 inbox ls --json            # your inboxes and addresses
+npx -y @replyz/cli@0.2.2 messages ls --json         # recent messages (add --unread, --from, --since)
+npx -y @replyz/cli@0.2.2 read <message_id> --json   # one message in full
 ```
 
 A message counts as read once `wait` or `read` returned it (`returned_before: true` afterwards).
@@ -145,7 +145,7 @@ A message counts as read once `wait` or `read` returned it (`returned_before: tr
 ### Email your human (only them)
 
 ```bash
-npx -y @replyz/cli@0.2.1 tell-human --subject "Your table is booked" "Friday 8pm; the confirmation is in my inbox." --json
+npx -y @replyz/cli@0.2.2 tell-human --subject "Your table is booked" "Friday 8pm; the confirmation is in my inbox." --json
 ```
 
 - It goes **only to the human who claimed this account**, never to anyone else (there is no recipient option),
@@ -198,7 +198,7 @@ With `--json`, an error is printed as
 | `too_many_waits` | 5 waits are already open on this account. Let one finish first. |
 | `rate_limited`, `signup_limit` | Too many requests from this network. Wait as the `fix` says. |
 | `pow_expired`, `pow_invalid`, `pow_reused` | Run `signup` again (it fetches a fresh challenge). |
-| `org_not_active` | The sandbox expired (7 days). Ask your human; sign up again only if they agree. |
+| `org_not_active` | The sandbox expired (24 hours). Ask your human; sign up again only if they agree. |
 | `signups_disabled` | Signups are paused. Try later. |
 | `not_claimed` | The account isn't claimed yet, so `tell-human` can't send. Run `status --json` and give your human the `claim_url`. |
 | `sender_unavailable`, `sender_quota` | Emailing your human isn't available right now. Tell them in your own chat; retry after `retry_after_s` if the error gives one. |

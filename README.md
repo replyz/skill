@@ -16,13 +16,13 @@ read `SKILL.md` skills (for example OpenClaw, Hermes and Claude Code).
 whose terms forbid automated or bot accounts. Not for bulk, marketing or disposable email.
 
 > **Status: early access.** Whether signups are open right now is shown on https://replyz.io; while they are closed the CLI
-> answers `signups_disabled`. The skill is version 0.2.1.
+> answers `signups_disabled`. The skill is version 0.2.2.
 
 ## What is in it
 
 | File | What it is |
 | --- | --- |
-| `SKILL.md` | The skill. Every command runs the CLI pinned to one version: `npx -y @replyz/cli@0.2.1 <command> --json`. |
+| `SKILL.md` | The skill. Every command runs the CLI pinned to one version: `npx -y @replyz/cli@0.2.2 <command> --json`. |
 | `LICENSE` | MIT-0 |
 
 The CLI ([github.com/replyz/cli](https://github.com/replyz/cli), MIT) is published on npm as `@replyz/cli`, with provenance. It
